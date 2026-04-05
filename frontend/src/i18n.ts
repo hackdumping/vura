@@ -236,6 +236,7 @@ const translations = {
             language: 'Langue',
             french: 'Français',
             english: 'English',
+            cancel: 'Annuler',
         },
     },
     en: {
@@ -462,6 +463,7 @@ const translations = {
             language: 'Language',
             french: 'Français',
             english: 'English',
+            cancel: 'Cancel',
         },
     },
 };

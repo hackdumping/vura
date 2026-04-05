@@ -183,7 +183,7 @@ export default function Dashboard() {
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ p: 2, justifyContent: 'center' }}>
-                    <Button onClick={() => setShowCreateDialog(false)} color="inherit">{t.common.cancel || 'Annuler'}</Button>
+                    <Button onClick={() => setShowCreateDialog(false)} color="inherit">{t.common.cancel}</Button>
                 </DialogActions>
             </Dialog>
         </Box>

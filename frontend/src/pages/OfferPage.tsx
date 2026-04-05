@@ -5,14 +5,12 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const MotionBox = motion(Box as any);
-const MotionPaper = motion(Paper as any);
 
 interface Props {
     form: any;
 }
 
 export default function OfferPage({ form }: Props) {
-    const isDark = true; // Forçons le mode sombre premium pour l'offre
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', py: 10, background: '#050615', position: 'relative', overflow: 'hidden' }}>
