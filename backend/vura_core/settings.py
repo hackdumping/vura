@@ -12,8 +12,9 @@ if os.getenv('VERCEL_URL'):
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.vercel.app',
-    'https://*.custom-domain.com', # Si vous en avez un
 ]
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -94,7 +95,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS already set above
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
