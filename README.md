@@ -15,7 +15,7 @@ Vura est une plateforme SaaS professionnelle pour la création de formulaires dy
 - **Base de données** : SQLite (local) / PostgreSQL (production).
 
 ## 📂 Structure du Projet
-- `/frontend` : Application React (Vite).
+- `/vura-forms` : Application React (Vura Forms).
 - `/backend` : API Django.
 - `vercel.json` : Configuration pour le déploiement monorepo sur Vercel.
 
@@ -41,7 +41,7 @@ python manage.py runserver
 
 ### 2. Frontend (React)
 ```bash
-cd frontend
+cd vura-forms
 npm install
 npm run dev
 ```

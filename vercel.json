@@ -11,7 +11,7 @@
         },
         {
             "source": "/(.*)",
-            "destination": "/frontend/$1"
+            "destination": "/vura-forms/$1"
         }
     ]
 }
