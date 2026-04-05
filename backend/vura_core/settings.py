@@ -10,6 +10,11 @@ ALLOWED_HOSTS = ['*']
 if os.getenv('VERCEL_URL'):
     ALLOWED_HOSTS.append(os.getenv('VERCEL_URL'))
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://*.custom-domain.com', # Si vous en avez un
+]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
