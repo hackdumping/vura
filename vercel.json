@@ -1,12 +1,18 @@
 {
     "version": 2,
-    "buildCommand": "chmod +x build_files.sh && ./build_files.sh",
     "builds": [
         {
             "src": "frontend/package.json",
             "use": "@vercel/static-build",
             "config": {
                 "distDir": "dist"
+            }
+        },
+        {
+            "src": "backend/build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles"
             }
         },
         {
@@ -21,15 +27,19 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/api/$1"
+            "destination": "backend/vura_core/wsgi.py"
         },
         {
             "source": "/admin/(.*)",
-            "destination": "/admin/$1"
+            "destination": "backend/vura_core/wsgi.py"
+        },
+        {
+            "source": "/static/(.*)",
+            "destination": "backend/staticfiles/$1"
         },
         {
             "source": "/(.*)",
-            "destination": "/"
+            "destination": "/index.html"
         }
     ]
 }
