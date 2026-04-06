@@ -1,11 +1,9 @@
 #!/bin/bash
 
-# Move into the backend directory
-cd "$(dirname "$0")"
-echo "BUILD START in $(pwd)"
+echo "BUILD START"
 
 # Install dependencies
-python3.12 -m pip install -r requirements.txt --break-system-packages
+python3.12 -m pip install -r requirements.txt
 
 # Run migrations (IMPORTANT: needs DATABASE_URL to be set)
 python3.12 manage.py migrate --noinput
