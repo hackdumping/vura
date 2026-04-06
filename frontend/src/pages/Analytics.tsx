@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TableSortLabel, Snackbar, Alert } from '@mui/material';
-import { ContentPaste } from '@mui/icons-material';
+import { Container, Typography, Box, Paper, CircularProgress, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, TableSortLabel, Snackbar, Alert, IconButton } from '@mui/material';
+import { ContentPaste, Visibility as VisibilityIcon, Group as GroupIcon, TrendingUp as TrendingUpIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import api from '../api';
@@ -25,6 +25,22 @@ export default function Analytics() {
     const [orderBy, setOrderBy] = useState<string>('submitted_at');
     const [syncing, setSyncing] = useState(false);
     const [snackbar, setSnackbar] = useState({ open: false, msg: '' });
+
+    const handleDeleteResponse = async (responseId: number) => {
+        if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet enregistrement ?")) return;
+
+        try {
+            await api.delete(`forms/builder/${id}/responses/${responseId}/`);
+            setData((prev: any) => ({
+                ...prev,
+                responses: prev.responses.filter((r: any) => r.id !== responseId),
+                total_responses: prev.total_responses - 1
+            }));
+            setSnackbar({ open: true, msg: "Enregistrement supprimé" });
+        } catch (error) {
+            setSnackbar({ open: true, msg: "Erreur lors de la suppression" });
+        }
+    };
 
     useEffect(() => {
         if (!useAppStore.getState().token) {
@@ -173,6 +189,82 @@ export default function Analytics() {
                     </Paper>
                 )}
 
+                {/* Specialized Tunnel Metrics */}
+                {data.is_specialized && (
+                    <Box sx={{ mb: 5 }}>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 5 }}>
+                            <Paper sx={{ p: 3, borderRadius: 3, textAlign: 'center', border: '1px solid', borderColor: isDark ? 'rgba(79,70,229,0.3)' : '#C7D2FE', background: isDark ? 'rgba(79,70,229,0.05)' : '#F5F3FF', position: 'relative', overflow: 'hidden' }}>
+                                <VisibilityIcon sx={{ position: 'absolute', top: -10, right: -10, fontSize: 80, opacity: 0.05, color: '#4F46E5' }} />
+                                <Typography variant="h4" fontWeight={900} color="#4F46E5">{data.views || 0}</Typography>
+                                <Typography variant="caption" fontWeight={700} color="text.secondary">VUES TOTALES (IMPRESSIONS)</Typography>
+                            </Paper>
+                            <Paper sx={{ p: 3, borderRadius: 3, textAlign: 'center', border: '1px solid', borderColor: isDark ? 'rgba(16,185,129,0.3)' : '#D1FAE5', background: isDark ? 'rgba(16,185,129,0.05)' : '#F0FDF4', position: 'relative', overflow: 'hidden' }}>
+                                <GroupIcon sx={{ position: 'absolute', top: -10, right: -10, fontSize: 80, opacity: 0.05, color: '#10B981' }} />
+                                <Typography variant="h4" fontWeight={900} color="#10B981">{data.total_responses || 0}</Typography>
+                                <Typography variant="caption" fontWeight={700} color="text.secondary">CONVERSIONS (CAPTURES)</Typography>
+                            </Paper>
+                            <Paper sx={{ p: 3, borderRadius: 3, textAlign: 'center', border: '1px solid', borderColor: isDark ? 'rgba(245,158,11,0.3)' : '#FEF3C7', background: isDark ? 'rgba(245,158,11,0.05)' : '#FFFBEB', position: 'relative', overflow: 'hidden' }}>
+                                <TrendingUpIcon sx={{ position: 'absolute', top: -10, right: -10, fontSize: 80, opacity: 0.05, color: '#F59E0B' }} />
+                                <Typography variant="h4" fontWeight={900} color="#F59E0B">
+                                    {data.views > 0 ? ((data.total_responses / data.views) * 100).toFixed(1) : 0}%
+                                </Typography>
+                                <Typography variant="caption" fontWeight={700} color="text.secondary">TAUX DE CONVERSION GLOBAL</Typography>
+                            </Paper>
+                        </Box>
+
+                        {data.funnel_data && data.funnel_data.length > 0 && (
+                            <Paper sx={{ p: { xs: 3, md: 4 }, borderRadius: 3, mb: 5, border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : '#E8EAF0', background: isDark ? '#0D0F1F' : '#FFFFFF' }}>
+                                <Typography variant="h6" fontWeight={800} sx={{ mb: 4 }}>Entonnoir de Conversion par Étape</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    {data.funnel_data.map((step: any, idx: number) => {
+                                        const prevViews = idx > 0 ? data.funnel_data[idx - 1].views : data.views;
+                                        const dropRate = prevViews > 0 ? ((step.views / prevViews) * 100).toFixed(1) : 0;
+                                        return (
+                                            <Box key={step.id} sx={{ position: 'relative' }}>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                                                    <Box sx={{ minWidth: 120 }}>
+                                                        <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ textTransform: 'uppercase' }}>
+                                                            Étape {idx + 1}: {step.type}
+                                                        </Typography>
+                                                        <Typography variant="body2" fontWeight={700} sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                            {step.label}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box sx={{ flex: 1, height: 40, bgcolor: isDark ? 'rgba(255,255,255,0.03)' : '#F3F4F6', borderRadius: 1.5, position: 'relative', overflow: 'hidden' }}>
+                                                        <Box sx={{
+                                                            height: '100%',
+                                                            width: `${data.views > 0 ? (step.views / data.views) * 100 : 0}%`,
+                                                            background: 'linear-gradient(90deg, #4F46E5, #6366F1)',
+                                                            transition: 'width 1s ease-in-out',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'flex-end',
+                                                            px: 2
+                                                        }}>
+                                                            <Typography variant="caption" fontWeight={900} color="white">
+                                                                {step.views}
+                                                            </Typography>
+                                                        </Box>
+                                                    </Box>
+                                                    <Box sx={{ minWidth: 80, textAlign: 'right' }}>
+                                                        <Typography variant="body2" fontWeight={800}>
+                                                            {dropRate}%
+                                                        </Typography>
+                                                        <Typography variant="caption" color="text.secondary">de l'étape précedente</Typography>
+                                                    </Box>
+                                                </Box>
+                                                {idx < data.funnel_data.length - 1 && (
+                                                    <Box sx={{ height: 20, ml: 128 / 8, borderLeft: '2px dashed', borderColor: 'divider' }} />
+                                                )}
+                                            </Box>
+                                        );
+                                    })}
+                                </Box>
+                            </Paper>
+                        )}
+                    </Box>
+                )}
+
                 {/* Pie Charts Grid for Choice Fields */}
                 {data.fields_summary && data.fields_summary.length > 0 && (
                     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: 'repeat(3, 1fr)' }, gap: 3, mb: 6 }}>
@@ -227,6 +319,7 @@ export default function Analytics() {
                                         </TableSortLabel>
                                     </TableCell>
                                 ))}
+                                <TableCell sx={{ fontWeight: 700, background: isDark ? '#111827' : '#F9FAFB', borderColor: 'divider', textAlign: 'right' }}>Actions</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -240,11 +333,16 @@ export default function Analytics() {
                                             {getAnswerForField(resp.answers || [], f.id)}
                                         </TableCell>
                                     ))}
+                                    <TableCell align="right" sx={{ borderColor: 'divider' }}>
+                                        <IconButton size="small" color="error" onClick={() => handleDeleteResponse(resp.id)} sx={{ opacity: 0.5, '&:hover': { opacity: 1 } }}>
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {responses.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={fields.length + 1} align="center" sx={{ py: 5, borderColor: 'divider', color: 'text.secondary' }}>
+                                    <TableCell colSpan={fields.length + 2} align="center" sx={{ py: 5, borderColor: 'divider', color: 'text.secondary' }}>
                                         {a.noData}
                                     </TableCell>
                                 </TableRow>

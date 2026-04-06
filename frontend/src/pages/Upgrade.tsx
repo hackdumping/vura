@@ -45,7 +45,7 @@ export default function Upgrade() {
 
     return (
         <Box sx={{ minHeight: '100vh', pt: 12, pb: 8, background: isDark ? '#050615' : '#F8F9FF', position: 'relative', overflow: 'hidden' }}>
-            <Container maxWidth="md">
+            <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
                 <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/dashboard')} sx={{ color: 'text.secondary', mb: 4 }}>
                     {u.back}
                 </Button>
@@ -108,8 +108,8 @@ export default function Upgrade() {
             </Container>
 
             {/* Background blobs */}
-            <Box sx={{ position: 'fixed', top: '10%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
-            <Box sx={{ position: 'fixed', bottom: '10%', left: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0 }} />
+            <Box sx={{ position: 'fixed', top: '10%', right: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(79,70,229,0.08) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0, pointerEvents: 'none' }} />
+            <Box sx={{ position: 'fixed', bottom: '10%', left: '-10%', width: 500, height: 500, borderRadius: '50%', background: 'radial-gradient(circle, rgba(6,182,212,0.05) 0%, transparent 70%)', filter: 'blur(60px)', zIndex: 0, pointerEvents: 'none' }} />
         </Box>
     );
 }

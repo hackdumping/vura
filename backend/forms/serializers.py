@@ -4,7 +4,7 @@ from .models import Form, FormField, FormResponse, ResponseAnswer
 class FormFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormField
-        fields = ('id', 'type', 'label', 'required', 'order', 'options')
+        fields = ('id', 'type', 'label', 'placeholder', 'required', 'order', 'options')
         
 class FormSerializer(serializers.ModelSerializer):
     fields = FormFieldSerializer(many=True, required=False)
@@ -59,3 +59,11 @@ class FormResponseSerializer(serializers.ModelSerializer):
         for answer_data in answers_data:
             ResponseAnswer.objects.create(response=form_response, field=answer_data['field'], value=answer_data['value'])
         return form_response
+
+    def update(self, instance, validated_data):
+        answers_data = validated_data.pop('answers', None)
+        if answers_data is not None:
+             instance.answers.all().delete()
+             for answer_data in answers_data:
+                 ResponseAnswer.objects.create(response=instance, field=answer_data['field'], value=answer_data['value'])
+        return instance

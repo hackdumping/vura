@@ -92,7 +92,7 @@ export default function Dashboard() {
                                     {d.upgradeBtn}
                                 </Button>
                             </Box>
-                            <Box sx={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,70,229,0.1) 0%, transparent 70%)', filter: 'blur(20px)' }} />
+                            <Box sx={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, background: 'radial-gradient(circle, rgba(79,70,229,0.1) 0%, transparent 70%)', filter: 'blur(20px)', pointerEvents: 'none' }} />
                         </Paper>
                     </MotionBox>
                 )}
@@ -123,7 +123,7 @@ export default function Dashboard() {
                                         {form.description || d.noDesc}
                                     </Typography>
                                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 'auto' }}>
-                                        <Button size="small" variant="outlined" startIcon={<EditIcon fontSize="small" />} component={Link as any} to={`/builder/${form.id}`} sx={{ borderRadius: 2, fontSize: '0.8rem', borderColor: 'divider', color: 'text.secondary' }}>{d.edit}</Button>
+                                        <Button size="small" variant="outlined" startIcon={<EditIcon fontSize="small" />} component={Link as any} to={form.is_specialized ? `/funnel-builder/${form.id}` : `/builder/${form.id}`} sx={{ borderRadius: 2, fontSize: '0.8rem', borderColor: 'divider', color: 'text.secondary' }}>{d.edit}</Button>
                                         <Button size="small" variant="contained" startIcon={<BarChartIcon fontSize="small" />} component={Link as any} to={`/dashboard/analytics/${form.id}`} sx={{ borderRadius: 2, fontSize: '0.8rem', background: 'linear-gradient(135deg, #4F46E5, #6366F1)' }}>{d.analytics}</Button>
                                         {form.is_published && (
                                             <Tooltip title={copiedId === form.public_id ? d.copied : d.copyLink}>
@@ -173,7 +173,7 @@ export default function Dashboard() {
                                 <Typography variant="body2" color="text.secondary">{d.typeStandardDesc}</Typography>
                             </Box>
                         </Paper>
-                        <Paper component={Link as any} to="/builder?type=funnel" onClick={() => setShowCreateDialog(false)} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer', textDecoration: 'none', color: 'inherit', border: '2px solid', borderColor: isDark ? 'rgba(79,70,229,0.3)' : '#C7D2FE', background: isDark ? 'rgba(79,70,229,0.05)' : '#F5F3FF', '&:hover': { borderColor: '#4F46E5' } }}>
+                        <Paper component={Link as any} to="/funnel-builder" onClick={() => setShowCreateDialog(false)} sx={{ p: 3, borderRadius: 3, display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer', textDecoration: 'none', color: 'inherit', border: '2px solid', borderColor: isDark ? 'rgba(79,70,229,0.3)' : '#C7D2FE', background: isDark ? 'rgba(79,70,229,0.05)' : '#F5F3FF', '&:hover': { borderColor: '#4F46E5' } }}>
                             <Box sx={{ fontSize: 40 }}>🚀</Box>
                             <Box>
                                 <Typography variant="h6" fontWeight={700} color="#4F46E5">{d.typeSpecialized}</Typography>

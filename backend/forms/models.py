@@ -22,6 +22,10 @@ class Form(models.Model):
     # Advanced Funnel Config (Premium)
     funnel_config = models.JSONField(default=dict, blank=True, help_text="Metadata for multi-screen specialized funnels")
     
+    # Analytics
+    views = models.PositiveIntegerField(default=0)
+    step_impressions = models.JSONField(default=dict, blank=True, help_text="Impressions per step ID: {step_id: count}")
+    
     def __str__(self):
         return self.title
 
@@ -40,6 +44,7 @@ class FormField(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name='fields')
     type = models.CharField(max_length=50, choices=FIELD_TYPES)
     label = models.CharField(max_length=255)
+    placeholder = models.CharField(max_length=255, blank=True)
     required = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     options = models.JSONField(blank=True, null=True, help_text="Liste des choix pour les champs multiples (e.g. ['Choix 1', 'Choix 2'])")

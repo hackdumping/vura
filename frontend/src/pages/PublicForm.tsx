@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Typography, Box, Paper, CircularProgress, Button, TextField, FormControl, RadioGroup, FormControlLabel, Radio, Checkbox, FormGroup } from '@mui/material';
+import { Container, Typography, Box, Paper, CircularProgress, Button, TextField, FormControl, RadioGroup, FormControlLabel, Radio, Checkbox, FormGroup, LinearProgress } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import SendIcon from '@mui/icons-material/Send';
@@ -7,6 +7,7 @@ import { publicApi } from '../api';
 import { useAppStore } from '../store';
 import FunnelRenderer from '../components/forms/FunnelRenderer';
 import OfferPage from './OfferPage';
+import { generateFunnelHTML } from '../utils/funnelExport';
 
 export default function PublicForm() {
     const { public_id } = useParams();
@@ -20,7 +21,11 @@ export default function PublicForm() {
     const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
-        publicApi.get(`forms/p/${public_id}/`).then(res => setForm(res.data)).catch(() => setForm(null)).finally(() => setLoading(false));
+        publicApi.get(`forms/p/${public_id}/`).then(res => {
+            setForm(res.data);
+            // Track initial view
+            publicApi.post(`forms/builder/${res.data.id}/track_impression/`, {}).catch(() => { });
+        }).catch(() => setForm(null)).finally(() => setLoading(false));
     }, [public_id]);
 
     const handleChange = (fieldId: number, value: any) => setAnswers({ ...answers, [fieldId]: value });
@@ -69,12 +74,42 @@ export default function PublicForm() {
         );
     }
 
-    if (form.is_specialized) return (
-        <FunnelRenderer form={form} onSubmit={handleSubmit} />
-    );
+    if (form.is_specialized) {
+        if (form.funnel_config && form.funnel_config.steps) {
+            const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+            const htmlPreview = generateFunnelHTML(form.funnel_config, form.fields, form.public_id, apiUrl, 1, form.id);
+            return (
+                <Box sx={{ width: '100%', height: '100vh', overflow: 'hidden', bgcolor: form.funnel_config.theme?.bg || '#ffffff' }}>
+                    <iframe
+                        srcDoc={htmlPreview}
+                        style={{ width: '100%', height: '100%', border: 'none' }}
+                        title="Vura Premium Funnel"
+                    />
+                </Box>
+            );
+        }
+        return <FunnelRenderer form={form} onSubmit={handleSubmit} />;
+    }
+
+    const requiredFields = (form.fields || []).filter((f: any) => f.required);
+    const filledRequiredCount = requiredFields.filter((f: any) => answers[f.id] && answers[f.id].length > 0).length;
+    const progress = requiredFields.length > 0 ? (filledRequiredCount / requiredFields.length) * 100 : 0;
 
     return (
         <Box sx={{ minHeight: '100vh', py: 8, background: isDark ? '#050615' : '#F8F8FC', '&::before': { content: '""', position: 'fixed', inset: 0, pointerEvents: 'none', backgroundImage: isDark ? 'radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)' : 'radial-gradient(rgba(79,70,229,0.06) 1px, transparent 1px)', backgroundSize: '28px 28px' } }}>
+            <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000, bgcolor: isDark ? '#050615' : '#FFFFFF' }}>
+                <LinearProgress
+                    variant="determinate"
+                    value={progress}
+                    sx={{
+                        height: 6,
+                        bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#E8EAF0',
+                        '& .MuiLinearProgress-bar': {
+                            background: 'linear-gradient(90deg, #4F46E5, #6366F1)'
+                        }
+                    }}
+                />
+            </Box>
             <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
                 <Paper sx={{ p: 4, mb: 3, borderRadius: 3, borderTop: '6px solid #4F46E5', border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : '#E8EAF0', background: isDark ? '#0D0F1F' : '#FFFFFF' }}>
                     <Typography variant="h4" fontWeight={800} letterSpacing="-0.03em" gutterBottom>{form.title}</Typography>
@@ -88,10 +123,32 @@ export default function PublicForm() {
                                 {field.label}{field.required && <Box component="span" sx={{ color: '#EF4444', ml: 0.5 }}>*</Box>}
                             </Typography>
                             {['text', 'email', 'date', 'number'].includes(field.type) && (
-                                <TextField fullWidth required={field.required} type={field.type === 'date' ? 'date' : (field.type === 'number' ? 'number' : field.type)} variant="outlined" size="small" value={answers[field.id] || ''} onChange={(e) => handleChange(field.id, e.target.value)} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                <TextField
+                                    fullWidth
+                                    required={field.required}
+                                    type={field.type === 'date' ? 'date' : (field.type === 'number' ? 'number' : field.type)}
+                                    variant="outlined"
+                                    size="small"
+                                    placeholder={field.placeholder}
+                                    value={answers[field.id] || ''}
+                                    onChange={(e) => handleChange(field.id, e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                />
                             )}
                             {field.type === 'textarea' && (
-                                <TextField fullWidth multiline rows={4} required={field.required} variant="outlined" size="small" value={answers[field.id] || ''} onChange={(e) => handleChange(field.id, e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    required={field.required}
+                                    variant="outlined"
+                                    size="small"
+                                    placeholder={field.placeholder}
+                                    value={answers[field.id] || ''}
+                                    onChange={(e) => handleChange(field.id, e.target.value)}
+                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                />
                             )}
                             {field.type === 'single_choice' && (
                                 <FormControl required={field.required} fullWidth>
