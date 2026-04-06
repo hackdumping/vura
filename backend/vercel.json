@@ -20,11 +20,11 @@
     ],
     "routes": [
         {
-            "src": "/api/(.*)",
+            "src": "/api(.*)",
             "dest": "vura_core/wsgi.py"
         },
         {
-            "src": "/admin/(.*)",
+            "src": "/admin(.*)",
             "dest": "vura_core/wsgi.py"
         },
         {
