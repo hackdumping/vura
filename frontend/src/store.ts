@@ -6,6 +6,7 @@ interface User {
     username: string;
     email: string;
     is_premium: boolean;
+    plan: 'free' | 'pro' | 'enterprise';
 }
 
 interface AppState {

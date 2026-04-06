@@ -76,12 +76,12 @@ export const generateFunnelHTML = (
         const titleStr = step.title ? `<h1>${step.title}</h1>` : '';
         const leadStr = step.lead ? `<p class="lead">${step.lead}</p>` : '';
 
-        const renderIcon = (iconStr?: string, className?: string) => {
+        const renderIcon = (iconStr: string | undefined, className: string) => {
             if (!iconStr) return '';
             if (iconStr.startsWith('http') || iconStr.startsWith('data:image')) {
-                return `<img src="${iconStr}" class="${className}" style="max-width: 100%; object-fit: contain; border-radius: 8px;" alt="icon"/>`;
+                return `<div class="${className}"><img src="${iconStr}" alt="icon"/></div>`;
             }
-            return `<span class="${className}">${iconStr}</span>`;
+            return `<div class="${className}">${iconStr}</div>`;
         };
 
         switch (step.type) {
@@ -192,56 +192,67 @@ export const generateFunnelHTML = (
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=${theme.fontFamily.replace(/ /g, '+')}:wght@400;600;700;800&display=swap" rel="stylesheet">
     <title>Vura Tunnel</title>
     <style>
-        :root { --primary: ${theme.primaryColor}; --bg: ${theme.backgroundColor}; --text: ${theme.textColor}; }
+        :root { 
+            --primary: ${theme.primaryColor}; 
+            --bg: ${theme.backgroundColor}; 
+            --text: ${theme.textColor}; 
+            --card-bg: ${theme.backgroundColor === '#ffffff' || theme.backgroundColor === '#f8fafc' ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.08)'};
+            --border: ${theme.backgroundColor === '#ffffff' || theme.backgroundColor === '#f8fafc' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'};
+        }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: ${theme.fontFamily}, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; min-height: 100vh; }
+        body { margin: 0; font-family: '${theme.fontFamily}', sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; min-height: 100vh; }
         .container { width: 100%; max-width: 450px; padding: 24px; display: flex; flex-direction: column; position: relative; }
         .progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: rgba(0,0,0,0.05); z-index: 100; }
         .progress-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
         .screen { display: none; width: 100%; animation: fadeIn 0.4s ease; }
         .screen.active { display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .back-btn { background: none; border: none; color: #64748b; font-size: 16px; margin-bottom: 24px; cursor: pointer; display: flex; align-items: center; }
+        .back-btn { background: none; border: none; color: inherit; opacity: 0.6; font-size: 16px; margin-bottom: 24px; cursor: pointer; display: flex; align-items: center; }
         .eyebrow { color: var(--primary); font-weight: 700; font-size: 14px; text-transform: uppercase; margin-bottom: 8px; }
         h1 { font-size: 32px; font-weight: 800; line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
-        .lead { font-size: 18px; color: #64748b; line-height: 1.5; margin-bottom: 32px; }
-        .hero { margin-bottom: 32px; }
-        .hero-inner { background: white; border-radius: 20px; padding: 12px; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .hero-icon { width: 40px; height: 40px; border-radius: 10px; }
-        .hero-label { font-weight: 600; font-size: 14px; padding-right: 8px; }
+        .lead { font-size: 18px; opacity: 0.7; line-height: 1.5; margin-bottom: 32px; }
+        .hero { margin-bottom: 40px; display: flex; justify-content: center; width: 100%; }
+        .hero-inner { background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 28px; padding: 32px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 15px 35px -5px rgba(0,0,0,0.12); border: 1px solid var(--border); width: 100%; max-width: 240px; transition: transform 0.3s ease; }
+        .hero-inner:hover { transform: translateY(-5px); }
+        .hero-icon { width: 100px; height: 100px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 56px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        .hero-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-label { font-weight: 700; font-size: 16px; letter-spacing: -0.01em; opacity: 0.9; }
         .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
-        .stat-box { background: white; padding: 16px; border-radius: 16px; border: 1px solid #eef2f6; }
+        .stat-box { background: var(--card-bg); backdrop-filter: blur(10px); padding: 16px; border-radius: 16px; border: 1px solid var(--border); }
         .stat-box .num { font-size: 24px; font-weight: 800; color: var(--primary); }
-        .stat-box .lbl { font-size: 12px; color: #64748b; font-weight: 600; }
+        .stat-box .lbl { font-size: 12px; opacity: 0.7; font-weight: 600; }
         .choices { display: flex; flex-direction: column; gap: 12px; }
-        .choice { background: white; border: 1px solid #eef2f6; padding: 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; text-align: left; }
-        .choice:hover { border-color: var(--primary); background: #f8fafc; }
+        .choice { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 20px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.2s; text-align: left; color: inherit; }
+        .choice:hover { border-color: var(--primary); background: rgba(0,0,0,0.02); }
         .choice .ct { font-weight: 600; font-size: 16px; }
-        .choice .cs { font-size: 13px; color: #64748b; margin-top: 2px; }
+        .choice .cs { font-size: 13px; opacity: 0.7; margin-top: 2px; }
         .choice .arr { color: #cbd5e1; font-size: 20px; }
-        .card { background: white; padding: 24px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .card { background: var(--card-bg); backdrop-filter: blur(10px); padding: 24px; border-radius: 24px; box-shadow: 0 20px 40px -10px rgba(0,0,0,0.05); margin-bottom: 24px; border: 1px solid var(--border); }
         .card-title { font-weight: 700; font-size: 18px; margin-bottom: 8px; }
         .ing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
-        .ing-box { background: #f8fafc; padding: 16px; border-radius: 16px; text-align: center; }
+        .ing-box { background: var(--card-bg); padding: 16px; border-radius: 16px; text-align: center; border: 1px solid var(--border); }
         .ing-box .ie { font-size: 24px; display: block; margin-bottom: 8px; }
         .ing-box .in { font-weight: 700; font-size: 14px; }
-        .ing-box .id { font-size: 11px; color: #64748b; margin-top: 4px; }
+        .ing-box .id { font-size: 11px; opacity: 0.7; margin-top: 4px; }
         .field-box { margin-bottom: 20px; }
-        .field-box label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: #64748b; }
-        .field-box input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 16px; outline: none; }
-        .cta { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; }
+        .field-box label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; opacity: 0.7; }
+        .field-box input { width: 100%; padding: 16px; border-radius: 12px; border: 1px solid var(--border); font-size: 16px; outline: none; background: var(--card-bg); color: inherit; }
+        .cta { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; box-shadow: 0 10px 20px -5px var(--primary); }
         .loader-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 0; text-align: center; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(0,0,0,0.05); border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .score-circle { position: relative; width: 150px; height: 150px; margin: 0 auto 32px; }
         .circular-chart { display: block; margin: 10px auto; max-width: 100%; }
-        .circle-bg { fill: none; stroke: #eee; stroke-width: 2.8; }
+        .circle-bg { fill: none; stroke: var(--border); stroke-width: 2.8; }
         .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; stroke: var(--primary); transition: stroke-dasharray 2s ease; }
         .score-inner { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
         .score-val { font-size: 32px; font-weight: 800; color: var(--primary); }
-        .ebook-box { background: #f8fafc; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 32px; border: 1px dashed #cbd5e1; }
+        .ebook-box { background: var(--card-bg); border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 32px; border: 1px dashed var(--border); }
         .ebook-icon { width: 48px; border-radius: 8px; }
         .ebook-title { font-weight: 700; font-size: 14px; }
         .ebook-link { font-size: 13px; color: var(--primary); font-weight: 600; text-decoration: none; }

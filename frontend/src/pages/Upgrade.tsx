@@ -7,6 +7,7 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useAppStore } from '../store';
+import api from '../api';
 
 const MotionBox = motion(Box as any);
 const MotionPaper = motion(Paper as any);
@@ -19,25 +20,23 @@ export default function Upgrade() {
     const [upgrading, setUpgrading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    if (user?.is_premium && !success) {
+    if (user?.plan === 'pro' && !success) {
         navigate('/dashboard');
     }
 
     const handleUpgrade = async () => {
         setUpgrading(true);
         try {
-            // Simulation d'un délai de paiement
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            // Real API call to persist the upgrade
+            const res = await api.put('users/upgrade/', { plan: 'pro' });
 
-            // Appel API pour passer en premium (backend mock ou endpoint direct)
-            // Ici on simule que le backend répond OK et on met à jour localement
-            // Dans une vraie app, on redirigerait vers Stripe/GeniusPay
-            const updatedUser = { ...user!, is_premium: true };
-            if (token) setAuth(updatedUser, token);
+            // Update the local store with the new user data (plan and is_premium)
+            if (token) setAuth(res.data, token);
 
             setSuccess(true);
         } catch (error) {
-            console.error(error);
+            console.error('Upgrade failed:', error);
+            alert('Le paiement a échoué ou une erreur réseau est survenue.');
         } finally {
             setUpgrading(false);
         }

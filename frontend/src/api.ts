@@ -1,8 +1,14 @@
 import axios from 'axios';
 import { useAppStore } from './store';
 
+const getBaseURL = () => {
+    let url = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/';
+    if (!url.endsWith('/')) url += '/';
+    return url;
+};
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/',
+    baseURL: getBaseURL(),
 });
 
 api.interceptors.request.use((config) => {

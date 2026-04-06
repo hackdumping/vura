@@ -49,7 +49,12 @@ export default function FunnelBuilderV2() {
                         }
                     }
                     if (data.funnel_config && data.funnel_config.steps) {
-                        setConfig(data.funnel_config);
+                        // Ensure theme is always present by merging defaultTheme
+                        const mergedConfig = {
+                            ...data.funnel_config,
+                            theme: { ...defaultTheme, ...(data.funnel_config.theme || {}) }
+                        };
+                        setConfig(mergedConfig);
                     }
                 })
                 .catch((err: any) => console.error("Error loading funnel:", err));
@@ -96,8 +101,9 @@ export default function FunnelBuilderV2() {
                 const res = await api.post('forms/builder/', payload);
                 navigate(`/funnel-builder/${res.data.id}`);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to save funnel', err);
+            alert(`Erreur lors de la sauvegarde : ${err.response?.data?.detail || err.message}`);
         } finally {
             setIsSaving(false);
         }
@@ -312,9 +318,29 @@ export default function FunnelBuilderV2() {
 
                                     {activeStep.type === 'hook' && (
                                         <>
+                                            {/* Large Icon Preview in Editor */}
+                                            {activeStep.icon && (
+                                                <Box sx={{
+                                                    width: 100, height: 100,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: '56px',
+                                                    bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+                                                    border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0',
+                                                    borderRadius: '22px',
+                                                    overflow: 'hidden',
+                                                    boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                                                    mx: 'auto', mb: 3
+                                                }}>
+                                                    {activeStep.icon.startsWith('http') || activeStep.icon.startsWith('data:image') ? (
+                                                        <img src={activeStep.icon} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Preview" />
+                                                    ) : (
+                                                        activeStep.icon
+                                                    )}
+                                                </Box>
+                                            )}
                                             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                                                <TextField fullWidth size="small" label="Icône (Emoji, URL, Image Locale)" value={activeStep.icon || ''} onChange={(e) => updateStep(activeStep.id, { icon: e.target.value })} />
-                                                <Button variant="outlined" component="label" sx={{ whiteSpace: 'nowrap' }}>
+                                                <TextField fullWidth size="small" label="Icone / Emoji" value={activeStep.icon || ''} onChange={(e) => updateStep(activeStep.id, { icon: e.target.value })} />
+                                                <Button variant="outlined" component="label" sx={{ whiteSpace: 'nowrap', borderRadius: 2 }}>
                                                     Upload
                                                     <input type="file" hidden accept="image/*" onChange={(e) => handleImageUpload(e, 'icon')} />
                                                 </Button>
@@ -405,9 +431,29 @@ export default function FunnelBuilderV2() {
 
                                     {activeStep.type === 'vente' && (
                                         <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                                            {/* Large Ebook Icon Preview */}
+                                            {activeStep.ebookIcon && (
+                                                <Box sx={{
+                                                    width: 100, height: 130,
+                                                    mx: 'auto', mb: 2,
+                                                    borderRadius: 2,
+                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                    fontSize: '48px',
+                                                    bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+                                                    border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.1)' : '#e2e8f0',
+                                                    overflow: 'hidden',
+                                                    boxShadow: '0 10px 20px rgba(0,0,0,0.15)'
+                                                }}>
+                                                    {activeStep.ebookIcon.startsWith('http') || activeStep.ebookIcon.startsWith('data:image') ? (
+                                                        <img src={activeStep.ebookIcon} style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="Ebook Preview" />
+                                                    ) : (
+                                                        activeStep.ebookIcon
+                                                    )}
+                                                </Box>
+                                            )}
                                             <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1 }}>
                                                 <TextField fullWidth size="small" label="Icône Ebook (Emoji, URL, Local)" value={activeStep.ebookIcon || ''} onChange={(e) => updateStep(activeStep.id, { ebookIcon: e.target.value })} />
-                                                <Button variant="outlined" component="label" sx={{ whiteSpace: 'nowrap' }}>
+                                                <Button variant="outlined" component="label" sx={{ whiteSpace: 'nowrap', borderRadius: 2 }}>
                                                     Upload
                                                     <input type="file" hidden accept="image/*" onChange={(e) => handleImageUpload(e, 'ebookIcon')} />
                                                 </Button>
@@ -436,7 +482,7 @@ export default function FunnelBuilderV2() {
                     {activeTab === 1 && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 700 }}>COULEURS GLOBALES</Typography>
-                            {Object.entries(config.theme).map(([key, val]) => (
+                            {config.theme && Object.entries(config.theme).map(([key, val]) => (
                                 <TextField
                                     key={key} size="small" label={key} type="color" value={val}
                                     onChange={(e) => setConfig(prev => ({ ...prev, theme: { ...prev.theme, [key]: e.target.value } }))}
