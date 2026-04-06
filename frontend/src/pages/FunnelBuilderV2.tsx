@@ -221,15 +221,44 @@ export default function FunnelBuilderV2() {
                                                     {(provided) => (
                                                         <Paper
                                                             ref={provided.innerRef} {...provided.draggableProps}
-                                                            sx={{ mb: 1.5, p: 1.5, display: 'flex', alignItems: 'center', cursor: 'pointer', border: '2px solid', borderColor: selectedStepId === step.id ? '#4F46E5' : 'transparent', bgcolor: selectedStepId === step.id ? (isDark ? 'rgba(79,70,229,0.15)' : '#EEF2FF') : (isDark ? 'rgba(255,255,255,0.03)' : '#fff') }}
+                                                            sx={{
+                                                                mb: 1.5, p: 1,
+                                                                display: 'flex', alignItems: 'center', cursor: 'pointer',
+                                                                borderRadius: 3,
+                                                                border: '2px solid',
+                                                                borderColor: selectedStepId === step.id ? '#4F46E5' : 'transparent',
+                                                                bgcolor: selectedStepId === step.id ? (isDark ? 'rgba(79,70,229,0.15)' : '#F5F3FF') : (isDark ? 'rgba(255,255,255,0.03)' : '#fff'),
+                                                                transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                                                '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }
+                                                            }}
                                                             onClick={() => setSelectedStepId(step.id)}
                                                         >
-                                                            <Box {...provided.dragHandleProps} sx={{ mr: 1, color: 'text.disabled', display: 'flex' }}><DragIndicatorIcon /></Box>
-                                                            <Box sx={{ flex: 1 }}>
-                                                                <Typography variant="body2" fontWeight={700}>{step.type.toUpperCase()}</Typography>
-                                                                <Typography variant="caption" color="text.secondary">{step.title || 'Sans titre'}</Typography>
+                                                            <Box {...provided.dragHandleProps} sx={{ mr: 1, color: 'text.disabled', display: 'flex' }}><DragIndicatorIcon fontSize="small" /></Box>
+
+                                                            {/* Large Icon Preview */}
+                                                            <Box sx={{
+                                                                width: 48, height: 48,
+                                                                borderRadius: 2,
+                                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                                fontSize: '24px',
+                                                                bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#F8FAFC',
+                                                                mr: 2,
+                                                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                                                            }}>
+                                                                {step.type === 'hook' && '🚀'}
+                                                                {step.type === 'question' && '❓'}
+                                                                {step.type === 'educatif' && '📖'}
+                                                                {step.type === 'capture' && '🔒'}
+                                                                {step.type === 'loading' && '⏳'}
+                                                                {step.type === 'resultats' && '🏆'}
+                                                                {step.type === 'vente' && '💰'}
                                                             </Box>
-                                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); removeStep(step.id); }} color="error"><DeleteIcon fontSize="small" /></IconButton>
+
+                                                            <Box sx={{ flex: 1 }}>
+                                                                <Typography variant="caption" fontWeight={800} color="primary" sx={{ letterSpacing: 1, mb: 0.5 }}>{step.type.toUpperCase()}</Typography>
+                                                                <Typography variant="body2" fontWeight={700} sx={{ lineHeight: 1.2 }}>{step.title || 'Sans titre'}</Typography>
+                                                            </Box>
+                                                            <IconButton size="small" onClick={(e) => { e.stopPropagation(); removeStep(step.id); }} color="error" sx={{ opacity: 0.6, '&:hover': { opacity: 1 } }}><DeleteIcon fontSize="small" /></IconButton>
                                                         </Paper>
                                                     )}
                                                 </Draggable>
@@ -240,16 +269,34 @@ export default function FunnelBuilderV2() {
                                 </Droppable>
                             </DragDropContext>
 
-                            <Select size="small" fullWidth value="" displayEmpty onChange={(e) => addStep(e.target.value as StepType)} sx={{ mb: 4 }}>
-                                <MenuItem value="" disabled>+ Ajouter une étape</MenuItem>
-                                <MenuItem value="hook">Hook (Accroche)</MenuItem>
-                                <MenuItem value="question">Question à choix</MenuItem>
-                                <MenuItem value="educatif">Éducatif (Info)</MenuItem>
-                                <MenuItem value="capture">Capture (Lead gen)</MenuItem>
-                                <MenuItem value="loading">Loading complet</MenuItem>
-                                <MenuItem value="resultats">Résultats (Score)</MenuItem>
-                                <MenuItem value="vente">Page de vente</MenuItem>
-                            </Select>
+                            <Typography variant="caption" fontWeight={800} color="text.secondary" sx={{ display: 'block', mb: 1, mt: 2 }}>AJOUTER UNE ÉTAPE</Typography>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, mb: 4 }}>
+                                {[
+                                    { type: 'hook', icon: '🚀', label: 'Hook' },
+                                    { type: 'question', icon: '❓', label: 'Question' },
+                                    { type: 'educatif', icon: '📖', label: 'Info' },
+                                    { type: 'capture', icon: '🔒', label: 'Capture' },
+                                    { type: 'loading', icon: '⏳', label: 'Wait' },
+                                    { type: 'resultats', icon: '🏆', label: 'Score' },
+                                    { type: 'vente', icon: '💰', label: 'Vente' },
+                                ].map(i => (
+                                    <Button
+                                        key={i.type}
+                                        onClick={() => addStep(i.type as StepType)}
+                                        sx={{
+                                            display: 'flex', flexDirection: 'column',
+                                            p: 1.5, borderRadius: 3, minWidth: 0,
+                                            bgcolor: isDark ? 'rgba(255,255,255,0.03)' : '#F8FAFC',
+                                            border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.08)' : '#e2e8f0',
+                                            '&:hover': { bgcolor: isDark ? 'rgba(79,70,229,0.1)' : '#EEF2FF', borderColor: '#4F46E5', transform: 'scale(1.05)' },
+                                            transition: 'all 0.2s'
+                                        }}
+                                    >
+                                        <Typography variant="h5" sx={{ mb: 0.5 }}>{i.icon}</Typography>
+                                        <Typography variant="caption" fontWeight={800} sx={{ fontSize: '9px', color: 'text.secondary' }}>{i.label.toUpperCase()}</Typography>
+                                    </Button>
+                                ))}
+                            </Box>
 
                             {/* ACTIVE STEP EDITOR */}
                             {activeStep && (
