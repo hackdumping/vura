@@ -1,6 +1,5 @@
 {
     "version": 2,
-    "buildCommand": "source .venv/bin/activate && chmod +x build_file.sh && ./build_files.sh",
     "builds": [
         {
             "src": "frontend/package.json",
