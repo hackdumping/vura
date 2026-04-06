@@ -1,0 +1,35 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "vura_core/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "15mb",
+                "runtime": "python3.12"
+            }
+        },
+        {
+            "src": "build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles",
+                "buildCommand": "bash build_files.sh"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "vura_core/wsgi.py"
+        },
+        {
+            "src": "/admin/(.*)",
+            "dest": "vura_core/wsgi.py"
+        },
+        {
+            "src": "/static/(.*)",
+            "dest": "staticfiles/$1"
+        }
+    ]
+}
