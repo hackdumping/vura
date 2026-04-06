@@ -2,21 +2,21 @@
     "version": 2,
     "builds": [
         {
-            "src": "package.json",
+            "src": "frontend/package.json",
             "use": "@vercel/static-build",
             "config": {
                 "distDir": "dist"
             }
         },
         {
-            "src": "build_files.sh",
+            "src": "backend/build_files.sh",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "staticfiles"
+                "distDir": "backend/staticfiles"
             }
         },
         {
-            "src": "vura_core/wsgi.py",
+            "src": "backend/vura_core/wsgi.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
@@ -27,15 +27,15 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "vura_core/wsgi.py"
+            "destination": "backend/vura_core/wsgi.py"
         },
         {
             "source": "/admin/(.*)",
-            "destination": "vura_core/wsgi.py"
+            "destination": "backend/vura_core/wsgi.py"
         },
         {
             "source": "/static/(.*)",
-            "destination": "staticfiles/$1"
+            "destination": "backend/staticfiles/$1"
         },
         {
             "source": "/(.*)",
