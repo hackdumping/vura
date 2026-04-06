@@ -9,7 +9,7 @@
             }
         },
         {
-            "src": "backend/vercel_app.py",
+            "src": "api/index.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
@@ -20,11 +20,11 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/backend/vercel_app.py"
+            "destination": "/api/index.py"
         },
         {
             "source": "/admin/(.*)",
-            "destination": "/backend/vercel_app.py"
+            "destination": "/api/index.py"
         },
         {
             "source": "/static/(.*)",
