@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "BUILD START"
+# Move into the backend directory
+cd "$(dirname "$0")"
+echo "BUILD START in $(pwd)"
 
 # Install dependencies
 python3.12 -m pip install -r requirements.txt --break-system-packages
