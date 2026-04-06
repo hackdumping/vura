@@ -9,7 +9,7 @@
             }
         },
         {
-            "src": "vura_core/wsgi.py",
+            "src": "backend/vura_core/wsgi.py",
             "use": "@vercel/python",
             "config": {
                 "maxLambdaSize": "15mb",
@@ -20,22 +20,22 @@
             "src": "build_files.sh",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "staticfiles"
+                "distDir": "backend/staticfiles"
             }
         }
     ],
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "/vura_core/wsgi.py"
+            "destination": "backend/vura_core/wsgi.py"
         },
         {
             "source": "/admin/(.*)",
-            "destination": "/vura_core/wsgi.py"
+            "destination": "backend/vura_core/wsgi.py"
         },
         {
             "source": "/static/(.*)",
-            "destination": "/staticfiles/$1"
+            "destination": "backend/staticfiles/$1"
         },
         {
             "source": "/(.*)",
