@@ -1,5 +1,6 @@
 {
     "version": 2,
+    "buildCommand": "cd backend && source .venv/bin/activate && chmod +x build_file.sh && ./build_files.sh",
     "builds": [
         {
             "src": "frontend/package.json",
