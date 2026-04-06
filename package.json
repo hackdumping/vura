@@ -1,8 +1,0 @@
-{
-    "name": "vura-monorepo",
-    "version": "1.0.0",
-    "private": true,
-    "scripts": {
-        "vercel-build": "npm install --prefix frontend && npm run build --prefix frontend && chmod +x backend/build_files.sh && ./backend/build_files.sh"
-    }
-}
