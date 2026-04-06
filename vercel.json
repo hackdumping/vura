@@ -9,6 +9,13 @@
             }
         },
         {
+            "src": "backend/build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "backend/staticfiles"
+            }
+        },
+        {
             "src": "backend/vura_core/wsgi.py",
             "use": "@vercel/python",
             "config": {
@@ -25,6 +32,10 @@
         {
             "source": "/admin/(.*)",
             "destination": "backend/vura_core/wsgi.py"
+        },
+        {
+            "source": "/static/(.*)",
+            "destination": "backend/staticfiles/$1"
         },
         {
             "source": "/(.*)",
