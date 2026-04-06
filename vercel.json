@@ -24,22 +24,29 @@
             }
         }
     ],
-    "rewrites": [
+    "routes": [
         {
-            "source": "/api/(.*)",
-            "destination": "/backend/vura_core/wsgi.py"
+            "src": "/api/(.*)",
+            "dest": "backend/vura_core/wsgi.py"
         },
         {
-            "source": "/admin/(.*)",
-            "destination": "/backend/vura_core/wsgi.py"
+            "src": "/api",
+            "dest": "backend/vura_core/wsgi.py"
         },
         {
-            "source": "/static/(.*)",
-            "destination": "/staticfiles/$1"
+            "src": "/admin/(.*)",
+            "dest": "backend/vura_core/wsgi.py"
         },
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+            "src": "/static/(.*)",
+            "dest": "staticfiles/$1"
+        },
+        {
+            "handle": "filesystem"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "index.html"
         }
     ]
 }
