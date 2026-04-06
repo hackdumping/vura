@@ -33,6 +33,7 @@ class FormField(models.Model):
         ('single_choice', 'Choix unique'),
         ('multiple_choice', 'Choix multiple'),
         ('date', 'Date'),
+        ('number', 'Nombre'),
         ('file', 'Fichier'),
     ]
 

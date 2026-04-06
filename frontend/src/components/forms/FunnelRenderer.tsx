@@ -98,9 +98,10 @@ export default function FunnelRenderer({ form, onSubmit }: FunnelRendererProps) 
                 </Typography>
 
                 <Box sx={{ mb: 6 }}>
-                    {['text', 'email', 'textarea'].includes(field.type) ? (
+                    {['text', 'email', 'textarea', 'number'].includes(field.type) ? (
                         <TextField
                             fullWidth multiline={field.type === 'textarea'} rows={field.type === 'textarea' ? 4 : 1}
+                            type={field.type === 'number' ? 'number' : 'text'}
                             variant="outlined" placeholder="Votre réponse ici..."
                             value={answers[field.id] || ''}
                             onChange={(e) => setAnswers({ ...answers, [field.id]: e.target.value })}

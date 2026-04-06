@@ -62,6 +62,7 @@ export default function FormBuilder() {
         { value: 'single_choice', label: b.singleChoice, emoji: '🔘' },
         { value: 'multiple_choice', label: b.multipleChoice, emoji: '☑️' },
         { value: 'date', label: b.dateField, emoji: '📅' },
+        { value: 'number', label: b.numberField, emoji: '🔢' },
     ];
 
     useEffect(() => {

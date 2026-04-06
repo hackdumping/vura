@@ -87,8 +87,8 @@ export default function PublicForm() {
                             <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 2 }}>
                                 {field.label}{field.required && <Box component="span" sx={{ color: '#EF4444', ml: 0.5 }}>*</Box>}
                             </Typography>
-                            {['text', 'email', 'date'].includes(field.type) && (
-                                <TextField fullWidth required={field.required} type={field.type === 'date' ? 'date' : field.type} variant="outlined" size="small" value={answers[field.id] || ''} onChange={(e) => handleChange(field.id, e.target.value)} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                            {['text', 'email', 'date', 'number'].includes(field.type) && (
+                                <TextField fullWidth required={field.required} type={field.type === 'date' ? 'date' : (field.type === 'number' ? 'number' : field.type)} variant="outlined" size="small" value={answers[field.id] || ''} onChange={(e) => handleChange(field.id, e.target.value)} InputLabelProps={{ shrink: true }} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
                             )}
                             {field.type === 'textarea' && (
                                 <TextField fullWidth multiline rows={4} required={field.required} variant="outlined" size="small" value={answers[field.id] || ''} onChange={(e) => handleChange(field.id, e.target.value)} sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />

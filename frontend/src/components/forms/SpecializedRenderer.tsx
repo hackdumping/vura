@@ -43,9 +43,11 @@ export default function SpecializedRenderer({ form, onSubmit, submitting }: Prop
         switch (currentField.type) {
             case 'text':
             case 'email':
+            case 'number':
                 return (
                     <TextField
                         fullWidth autoFocus variant="standard" placeholder="..."
+                        type={currentField.type === 'number' ? 'number' : 'text'}
                         value={value} onChange={(e) => updateAnswer(e.target.value)}
                         InputProps={{ disableUnderline: true, style: { fontSize: '2.5rem', fontWeight: 800, textAlign: 'center' } }}
                         sx={{ mt: 4 }}
