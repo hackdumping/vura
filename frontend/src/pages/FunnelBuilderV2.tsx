@@ -82,7 +82,7 @@ export default function FunnelBuilderV2() {
             })));
 
         const payload = {
-            title,
+            title: title || 'Tunnel sans titre',
             is_specialized: true,
             funnel_config: config,
             is_published: unpublish ? false : (publish ? true : !!publishedLink),
@@ -103,7 +103,8 @@ export default function FunnelBuilderV2() {
             }
         } catch (err: any) {
             console.error('Failed to save funnel', err);
-            alert(`Erreur lors de la sauvegarde : ${err.response?.data?.detail || err.message}`);
+            const errorMsg = err.response?.data ? JSON.stringify(err.response.data) : err.message;
+            alert(`Erreur lors de la sauvegarde : ${errorMsg}`);
         } finally {
             setIsSaving(false);
         }
