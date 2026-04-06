@@ -27,15 +27,15 @@
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "backend/vura_core/wsgi.py"
+            "destination": "/backend/vura_core/wsgi.py"
         },
         {
             "source": "/admin/(.*)",
-            "destination": "backend/vura_core/wsgi.py"
+            "destination": "/backend/vura_core/wsgi.py"
         },
         {
             "source": "/static/(.*)",
-            "destination": "backend/staticfiles/$1"
+            "destination": "/staticfiles/$1"
         },
         {
             "source": "/(.*)",
